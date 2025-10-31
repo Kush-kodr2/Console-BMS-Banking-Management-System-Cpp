@@ -4,15 +4,13 @@
 #include <limits>
 #include <cstdlib>
 #include "definitions.h"
+#include "data_handler.h"
 using namespace std;
 
-
-
-
-void customer_mode(vector<bank_account> customers)
+void customer_mode(vector<bank_account> &customers)
 {
     int acc_number;
-    int pin;
+    string pin;
     bool loggedIn = false;
     bank_account *loggedIn_cst = nullptr;
     // login logic.......
@@ -27,7 +25,7 @@ void customer_mode(vector<bank_account> customers)
     {
         bank_account &cst = customers[i];
 
-        if (cst.cst_login(pin))
+        if (cst.cst_login(acc_number, pin))
         {
             loggedIn_cst = &cst;
             loggedIn = true;
@@ -36,7 +34,8 @@ void customer_mode(vector<bank_account> customers)
     }
     if (!loggedIn)
     {
-        cout << "The account number and password does not match. Retry!" << endl;
+        cout << "The account number or password may be wrong / not match. Retry!" << endl;
+        return;
     }
 
     int cst_choice;
@@ -88,10 +87,6 @@ void customer_mode(vector<bank_account> customers)
         }
     } while (cst_choice != 6);
 }
-
-
-
-
 
 void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector<Acc_Close_Request> &requests)
 {
@@ -146,10 +141,13 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
             break;
         case 2:
             (*loggedIn_emp).view_acc(customers);
+            break;
         case 3:
             (*loggedIn_emp).update_acc_info(customers);
+            break;
         case 4:
             (*loggedIn_emp).close_acc(customers, requests);
+            break;
         case 5:
             cout << "Returning to Main Menu." << endl;
             break;
@@ -160,7 +158,7 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
     } while (emp_choice != 5);
 }
 
-void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank_emp> &staff, vector<Acc_Close_Request> requests)
+void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank_emp> &staff, vector<Acc_Close_Request> &requests)
 {
     int id;
     string pass;
@@ -213,6 +211,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 {
                 case 1:
                     manager.open_new_acc(customers);
+                    save_customers_to_file(customers);
                     break;
                 case 2:
                     manager.view_acc(customers);
@@ -222,6 +221,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                     break;
                 case 4:
                     manager.view_all_customers(customers);
+                    break;
                 case 5:
                     cout << "Returning........." << endl;
                     break;
@@ -250,6 +250,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 {
                 case 1:
                     manager.hire_new_emp(staff);
+                    save_employees_to_file(staff);
                     break;
                 case 2:
                     manager.view_emp_detail(staff);
@@ -294,6 +295,8 @@ int main()
     manager m1(0000, "securepass");
     manager m2(0100, "kushalpass");
     system("cls");
+    load_customers(customers);
+    load_employees(staff);
     cout << "\n\n";
     cout << "+-----------------------------------------------------+" << endl;
     cout << "|                                                     |" << endl;
@@ -349,6 +352,7 @@ int main()
                     break;
                 }
             } while (choice1 != 3);
+            break;
         }
         case 3:
             cout << "Exiting Program........" << endl;
@@ -358,6 +362,5 @@ int main()
             break;
         }
     } while (choice != 3);
-
     return 0;
 }
