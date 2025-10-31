@@ -4,6 +4,7 @@
 #include <string>
 
 using namespace std;
+
 string get_date();
 class bank_account
 {
