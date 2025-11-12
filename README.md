@@ -18,20 +18,20 @@ This project demonstrates fundamental banking operations with secure multi-tiere
 2. Navigate to the project directory.
 3. Compile the C++ files using a compiler (e.g. g++):-
    Use this command in terminal/cmd:
-   g++ src\*.cpp -o output\bank_app
+   g++ src/*.cpp -o output\bank_app
 4. Run the compiled executable (bank_app.exe) to start the banking management system.
 
 ## Issues and Future Roadmap for V2.0:-
 
 This project is fully functional (V1.0) but has planned architectural improvements. Contributors are welcome!
 
-* Input Validation: Implement do-while loops with robust type-checking (cin.fail()) for all user input (amounts, numbers, IDs) to prevent crashes from non-numeric input.
+* Input Validation: Implement do-while loops with robust type-checking (cin.fail()) for all user input (amounts, numbers, IDs) to prevent crashes from non-numeric input.[WORKING]
 
-* Full CRUD: Implement the ability for Managers/Staff to permanently delete and modify existing customer and employee records from the main data vectors.
+* Full CRUD: Implement the ability for Managers/Staff to permanently delete and modify existing customer and employee records from the main data vectors. [DONE]
 
-* Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable data handling.
+* Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable data handling. [PLANNED]
 
-* GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface.
+* GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface. [IN_PROGRESS]
 
 ## Features
 
