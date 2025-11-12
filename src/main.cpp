@@ -88,7 +88,7 @@ void customer_mode(vector<bank_account> &customers)
     } while (cst_choice != 6);
 }
 
-void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector<Acc_Close_Request> &requests)
+void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests)
 {
     int id;
     string pass;
@@ -125,7 +125,7 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
     {
         cout << "\n\nWARNING: Temporary Password Detected. MANDATORY PASSWORD CHANGE Required" << endl;
 
-        // Call the public method that handles the interactive change loop
+        // calling the public method that handles the pass change loop
         loggedIn_emp->initiate_pass_change();
 
         // save the vector , after the change to update the password and the flag in the file!
@@ -168,7 +168,7 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
     } while (emp_choice != 5);
 }
 
-void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank_emp> &staff, vector<Acc_Close_Request> &requests)
+void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests)
 {
     int id;
     string pass;
@@ -300,13 +300,14 @@ int main()
 {
     vector<bank_account> customers;
     vector<bank_emp> staff;
-    vector<Acc_Close_Request> requests;
+    vector<acc_close_request> requests;
 
     manager m1(0000, "securepass");
     manager m2(0100, "kushalpass");
     system("cls");
     load_customers(customers);
     load_employees(staff);
+    load_closure_requests(requests);
     cout << "\n\n";
     cout << "+-----------------------------------------------------+" << endl;
     cout << "|                                                     |" << endl;

@@ -86,18 +86,30 @@ public:
     }
 };
 
-class Acc_Close_Request
+class acc_close_request
 {
-public:
     int acc_num;
     int employee_ID;
     string employee_Name;
-
-    Acc_Close_Request(int acc, const int empID, const string &empName)
+    
+    public:
+    acc_close_request(int acc, const int empID, const string &empName)
         : acc_num(acc), employee_ID(empID), employee_Name(empName) // initializer list new feature in cpp, used instead of the old constructor body assignment, as given below.
     {
         // acc_num = accNum;
         // employee_ID = empID;
+    }
+    int get_acc_num() const
+    {
+        return acc_num;
+    }
+    int get_emp_ID() const
+    {
+        return employee_ID;
+    }
+    string get_emp_name() const
+    {
+        return employee_Name;
     }
 };
 
@@ -115,12 +127,15 @@ private:
     double monthly_salary;
     float increment_pa;
     bool not_changed_pass;
-    void set_pass(const string& new_pass){
+    void set_pass(const string &new_pass)
+    {
         emp_pass = new_pass;
         not_changed_pass = false;
     }
+
 public:
-    bool get_not_changed_pass() const{
+    bool get_not_changed_pass() const
+    {
         return not_changed_pass;
     }
     void initiate_pass_change();
@@ -128,7 +143,7 @@ public:
     void open_new_acc(vector<bank_account> &customers);
     void update_acc_info(vector<bank_account> &customers);
     void view_acc(const vector<bank_account> &customers);
-    void close_acc(vector<bank_account> &customers, vector<Acc_Close_Request> &requests);
+    void close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests);
     bank_emp(string name, string doh, string phone, string email, string dob, double mon_salary, float incre_pa, string pass) : emp_ID(next_emp_ID++), emp_name(name), emp_pass(pass), date_of_hire(doh), emp_phone_num(phone), emp_email(email), emp_dob(dob), monthly_salary(mon_salary), increment_pa(incre_pa)
     {
         this->not_changed_pass = true;
@@ -197,7 +212,7 @@ private:
 public:
     void open_new_acc(vector<bank_account> &customers);
     void view_acc(const vector<bank_account> &customers);
-    void close_acc(vector<bank_account> &customers, vector<Acc_Close_Request> &requests);
+    void close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests);
 
     void hire_new_emp(vector<bank_emp> &staff);
     void view_emp_detail(const vector<bank_emp> staff);

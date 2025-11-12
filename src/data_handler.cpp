@@ -1,5 +1,5 @@
-#include "data_handler.h"
 #include "definitions.h"
+#include "data_handler.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -207,7 +207,7 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
 
     if (!emp_file.is_open())
     {
-        cerr << "[System] Employee data file not found. "<< filename << endl;
+        cerr << "[System] Employee data file not found. " << filename << endl;
         return;
     }
     auto is_valid_int = [](const string &s)
@@ -251,15 +251,15 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
         }
         return true;
     };
-    auto trim = [](string s) -> string
-    {
-        const string whites = " \t\r\n";
-        size_t start = s.find_first_not_of(whites);
-        if (start == string::npos)
-            return string();
-        size_t end = s.find_last_not_of(whites);
-        return s.substr(start, end - start + 1);
-    };
+    // auto trim = [](string s) -> string
+    // {
+    //     const string whites = " \t\r\n";
+    //     size_t start = s.find_first_not_of(whites);
+    //     if (start == string::npos)
+    //         return string();
+    //     size_t end = s.find_last_not_of(whites);
+    //     return s.substr(start, end - start + 1);
+    // };
     string line;
 
     while (getline(emp_file, line))
@@ -338,7 +338,7 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
                     }
                     not_changed_pass = stoi(segment);
                 }
-                
+
                 field_index++;
             }
             catch (const exception &e)
@@ -358,4 +358,55 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
     }
     emp_file.close();
     cout << "[System] Employee data loaded successfully." << endl;
+}
+
+void save_closure_requests(const vector<acc_close_request> &requests, const string &filename)
+{
+    ofstream write_reqs(filename, ios::trunc);
+    if (!write_reqs.is_open())
+    {
+        cerr << "Could not open " << filename << " for saving account closure requests!" << endl;
+        return;
+    }
+    for (unsigned int i = 0; i < requests.size(); i++)
+    {
+        write_reqs << requests[i].get_acc_num() << ","
+                   << requests[i].get_emp_ID() << ","
+                   << requests[i].get_emp_name() << endl;
+    }
+}
+void load_closure_requests(vector<acc_close_request> &requests, const string &filename)
+{
+    ifstream read_reqs(filename);
+    if (!read_reqs.is_open())
+    {
+        cerr << "[System] Closure Requests data file not found. " << filename << endl;
+        return;
+    }
+    string line;
+    while (getline(read_reqs, line))
+    {
+        if (line.empty())
+        {
+            continue;
+        }
+        stringstream ss(line);
+        string acc_num_str, empID_str, emp_name;
+
+        getline(ss, acc_num_str, ',');
+        getline(ss, empID_str, ',');
+        getline(ss, emp_name);
+        try
+        {
+            int acc_num = stoi(acc_num_str);
+            int emp_id = stoi(empID_str);
+
+            acc_close_request loaded_request(acc_num, emp_id, emp_name);
+            requests.push_back(loaded_request);
+        }
+        catch (const exception &e)
+        {
+            cerr << "[Error] Skipping corrupted request record." << endl;
+        }
+    }
 }

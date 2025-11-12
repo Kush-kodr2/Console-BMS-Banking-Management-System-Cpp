@@ -23,6 +23,7 @@ string get_date()
     return ss.str();
 }
 // User Methods
+
 int bank_account::nextAccountNumber = 103410000;
 
 bool bank_account::cst_login(const int accnum, const string pin)
@@ -280,7 +281,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
         }
     }
 }
-void bank_emp::close_acc(vector<bank_account> &customers, vector<Acc_Close_Request> &requests)
+void bank_emp::close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests)
 {
     int acc_number = 0;
     bool acc_found = false;
@@ -303,10 +304,10 @@ void bank_emp::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reque
         return;
     }
 
-    Acc_Close_Request new_Request(acc_number, emp_ID, emp_name); // constructor call
+    acc_close_request new_Request(acc_number, emp_ID, emp_name); // constructor call
 
     requests.push_back(new_Request);
-
+    save_closure_requests(requests);
     cout << "Request to close account " << acc_number << " sent for manager approval." << endl;
 }
 void bank_emp::show_emp_detail_man() const
@@ -457,7 +458,7 @@ void manager::view_acc(const vector<bank_account> &customers)
         cout << "ERROR! Account number not found." << endl;
     }
 }
-void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Request> &requests)
+void manager::close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests)
 {
     int man_choice;
     do
@@ -487,8 +488,8 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
 
                 for (unsigned int i = 0; i < requests.size(); i++)
                 {
-                    cout << i + 1 << ". Account: " << requests[i].acc_num << endl;
-                    cout << " Requested by: " << requests[i].employee_ID << " -- " << requests[i].employee_Name << endl;
+                    cout << i + 1 << ". Account: " << requests[i].get_acc_num()<< endl;
+                    cout << " Requested by: " << requests[i].get_emp_ID() << " -- " << requests[i].get_emp_name() << endl;
                 }
                 unsigned int choice;
                 cout << "Enter the number of the request to approve (or 0 to cancel): ";
@@ -496,7 +497,7 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
 
                 if (choice > 0 && choice <= requests.size())
                 {
-                    int accToClose = requests[choice - 1].acc_num;
+                    int accToClose = requests[choice - 1].get_acc_num();
                     for (unsigned int i = 0; i < customers.size(); i++)
                     {
                         if (customers[i].getaccnum() == accToClose)
