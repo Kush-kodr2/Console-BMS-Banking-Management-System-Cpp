@@ -21,31 +21,30 @@ This project demonstrates fundamental banking operations with secure multi-tiere
    g++ src\*.cpp -o output\bank_app
 4. Run the compiled executable (bank_app.exe) to start the banking management system.
 
-## Known Issues and Future Roadmap for V2.0:-
+## Issues and Future Roadmap for V2.0:-
 
 This project is fully functional (V1.0) but has planned architectural improvements. Contributors are welcome!
 
-- Input Validation: Implement do-while loops with robust type-checking (cin.fail()) for all user input (amounts, numbers, IDs) to prevent crashes from non-numeric input.
+* Input Validation: Implement do-while loops with robust type-checking (cin.fail()) for all user input (amounts, numbers, IDs) to prevent crashes from non-numeric input.
 
-- Full CRUD: Implement the ability for Managers/Staff to permanently delete and modify existing customer and employee records from the main data vectors.
+* Full CRUD: Implement the ability for Managers/Staff to permanently delete and modify existing customer and employee records from the main data vectors.
 
-- Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable and transactional data handling.
+* Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable data handling.
 
-- GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface.
+* GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface.
 
 ## Features
 
-- Create and manage bank accounts.
+* Create and manage bank accounts.
 
-- Deposit and withdraw funds.
+* Deposit and withdraw funds.
 
-- View account details and transaction history.
+* View account details and transaction history.
 
-- Simple and user-friendly command-line interface.
+* Simple and user-friendly command-line interface.
 
 ## License
 
 This project is licensed under the MIT License, see the LICENSE file for details.
-
 
 For any queries or contributions, please contact <codedbykush3@gmail.com>.

@@ -55,7 +55,7 @@ public:
     void setName(string);
     void setEmail(string);
     void setDob(string);
-    void setAccType(int);
+    void setAccType(string);
     int getaccnum() const
     {
         return acc_num;
@@ -114,18 +114,26 @@ private:
     string emp_dob;
     double monthly_salary;
     float increment_pa;
-
+    bool not_changed_pass;
+    void set_pass(const string& new_pass){
+        emp_pass = new_pass;
+        not_changed_pass = false;
+    }
 public:
+    bool get_not_changed_pass() const{
+        return not_changed_pass;
+    }
+    void initiate_pass_change();
     bool login(const int, const string);
     void open_new_acc(vector<bank_account> &customers);
     void update_acc_info(vector<bank_account> &customers);
     void view_acc(const vector<bank_account> &customers);
     void close_acc(vector<bank_account> &customers, vector<Acc_Close_Request> &requests);
-    bank_emp(string name, string doh, string phone, string email, string dob, double mon_salary, float incre_pa) : emp_ID(next_emp_ID++), emp_name(name), emp_pass(), date_of_hire(doh), emp_phone_num(phone), emp_email(email), emp_dob(dob), monthly_salary(mon_salary), increment_pa(incre_pa)
+    bank_emp(string name, string doh, string phone, string email, string dob, double mon_salary, float incre_pa, string pass) : emp_ID(next_emp_ID++), emp_name(name), emp_pass(pass), date_of_hire(doh), emp_phone_num(phone), emp_email(email), emp_dob(dob), monthly_salary(mon_salary), increment_pa(incre_pa)
     {
-
+        this->not_changed_pass = true;
     }
-    bank_emp(int id, string pass, string name, string doh, string phone, string email, string dob, double mon_salary, float incre_pa) : emp_ID(id), emp_name(name), emp_pass(pass), date_of_hire(doh), emp_phone_num(phone), emp_email(email), emp_dob(dob), monthly_salary(mon_salary), increment_pa(incre_pa)
+    bank_emp(int id, string pass, string name, string doh, string phone, string email, string dob, double mon_salary, float incre_pa, bool not_changed_pas) : emp_ID(id), emp_name(name), emp_pass(pass), date_of_hire(doh), emp_phone_num(phone), emp_email(email), emp_dob(dob), monthly_salary(mon_salary), increment_pa(incre_pa), not_changed_pass(not_changed_pas)
     {
         if (id >= next_emp_ID)
         {
@@ -172,6 +180,10 @@ public:
     float get_sal_incre() const
     {
         return increment_pa;
+    }
+    string get_emp_pass() const
+    {
+        return emp_pass;
     }
 };
 

@@ -62,7 +62,7 @@ void bank_account::show_acc_details() const
 {
     cout << "Name: " << holder_name << endl;
     cout << "Account Number: " << acc_num << endl;
-    cout << "Balance: $" << balance << endl;
+    cout << "Balance: ₹" << balance << endl;
     cout << "Account type: " << acc_type;
     cout << endl;
     cout << "Email Address: " << email_add << endl;
@@ -91,7 +91,7 @@ void bank_account::setDob(string newDob)
 {
     date_of_birth = newDob;
 }
-void bank_account::setAccType(int accType)
+void bank_account::setAccType(string accType)
 {
     acc_type = accType;
 }
@@ -106,7 +106,7 @@ void bank_emp ::open_new_acc(vector<bank_account> &customers)
 {
     string name;
     string email_id;
-    double init_balance = 0;
+    double init_balance = 0.0;
     string dob;
     string acc_type;
     int chooser = 1;
@@ -131,8 +131,11 @@ void bank_emp ::open_new_acc(vector<bank_account> &customers)
     if (chooser == 1)
         acc_type = "Saving";
     else
+    {
         acc_type = "Current";
-
+    }
+    cout << "Enter the initial deposit:- " << flush;
+    cin >> init_balance;
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cout << "Kindly ask the user to generate a PIN:- " << endl;
@@ -173,7 +176,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
     int acc_number;
     // bool acc_found = false;
     bank_account *acc_to_update = nullptr;
-    cout << "Enter account number to view:- " << endl;
+    cout << "Enter account number to update:- " << endl;
     cin >> acc_number;
 
     for (unsigned int i = 0; i < customers.size(); i++)
@@ -204,33 +207,59 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
             case 1:
             {
                 string newName;
+                cin.clear();
                 cout << "Enter the new name" << endl;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newName);
                 (*acc_to_update).setName(newName);
+                save_customers_to_file(customers);
+                cout << " Name updated successfully." << endl;
                 break;
             }
             case 2:
             {
                 string newEmail;
                 cout << "Enter the new email" << endl;
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newEmail);
                 (*acc_to_update).setEmail(newEmail);
+                save_customers_to_file(customers);
+                cout << " Email updated successfully." << endl;
                 break;
             }
             case 3:
             {
                 string newDob;
                 cout << "Enter the new date of birth" << endl;
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newDob);
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 (*acc_to_update).setDob(newDob);
+                save_customers_to_file(customers);
+                cout << " DOB updated successfully." << endl;
                 break;
             }
             case 4:
             {
-                int newAccType;
-                cout << "Enter the new account type" << endl;
-                cin >> newAccType;
-                (*acc_to_update).setAccType(newAccType);
+                int chooser;
+                string acc_type;
+                do
+                {
+                    cout << "Enter the new account type:- " << endl;
+                    cout << "1. Savings Account(Press 1) \n2. Current Account(Press 2)" << endl;
+                    cin >> chooser;
+                } while (chooser != 1 && chooser != 2);
+                if (chooser == 1)
+                    acc_type = "Saving";
+                else
+                    acc_type = "Current";
+
+                (*acc_to_update).setAccType(acc_type);
+                save_customers_to_file(customers);
+                cout << " Account type updated successfully." << endl;
                 break;
             }
             case 5:
@@ -256,7 +285,7 @@ void bank_emp::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reque
     int acc_number = 0;
     bool acc_found = false;
     // bank_account *acc_to_remove = nullptr;
-    cout << "Enter account number to view:- " << endl;
+    cout << "Enter the account number to be closed:- " << endl;
     cin >> acc_number;
 
     for (unsigned int i = 0; i < customers.size(); i++)
@@ -325,6 +354,32 @@ void bank_emp::set_emp_salary(double salary)
 void bank_emp::set_emp_hike(float percent)
 {
     increment_pa = percent;
+}
+void bank_emp::initiate_pass_change()
+{
+    string newPass1, newPass2;
+
+    cout << "\n[SECURITY] Initiating mandatory password change." << std::endl;
+    do
+    {
+        cout << "Enter NEW Password (min 6 chars): ";
+        cin >> newPass1;
+        cout << "Confirm NEW Password: ";
+        cin >> newPass2;
+
+        if (newPass1 == newPass2 && newPass1.length() >= 6)
+        {
+            set_pass(newPass1); // Calling the private mf,
+            cout << "Password updated successfully. Access granted." << std::endl;
+            break;
+        }
+        else
+        {
+            cout << "Passwords do not match or are too short. Please try again." << std::endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (true);
 }
 
 // Manager methods
@@ -433,7 +488,7 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
                 for (unsigned int i = 0; i < requests.size(); i++)
                 {
                     cout << i + 1 << ". Account: " << requests[i].acc_num << endl;
-                    cout << ", Requested by: " << requests[i].employee_ID << " -- " << requests[i].employee_Name << endl;
+                    cout << " Requested by: " << requests[i].employee_ID << " -- " << requests[i].employee_Name << endl;
                 }
                 unsigned int choice;
                 cout << "Enter the number of the request to approve (or 0 to cancel): ";
@@ -447,6 +502,7 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
                         if (customers[i].getaccnum() == accToClose)
                         {
                             customers.erase(customers.begin() + i);
+                            save_customers_to_file(customers);
                             break;
                         }
                     }
@@ -470,11 +526,11 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
                     std::cout << "Enter the account number to close: ";
                     std::cin >> acc_num;
 
-                    if (std::cin.fail())
+                    if (cin.fail())
                     {
-                        std::cout << "Error: Invalid input. Please enter a number." << std::endl;
-                        std::cin.clear();
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        cout << "Error: Invalid input. Please enter a number." << std::endl;
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     }
                     else
                     {
@@ -488,6 +544,7 @@ void manager::close_acc(vector<bank_account> &customers, vector<Acc_Close_Reques
                     {
                         found = true;
                         customers.erase(customers.begin() + i);
+                        save_customers_to_file(customers);
                         cout << "Account " << acc_num << " successfully closed." << endl;
                         break;
                     }
@@ -570,17 +627,19 @@ void manager::hire_new_emp(vector<bank_emp> &staff)
     cin >> empHike;
     std::cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
+    cout << "Enter the temporary employee pass: " << endl;
+    cin >> empPass;
+    std::cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     empDOH = get_date();
 
     // send an email to the emp_email telling him/her about the password...
 
-    bank_emp new_emp(empName, empDOH, empPhone, empEmail, empdob, empSalary, empHike);
+    bank_emp new_emp(empName, empDOH, empPhone, empEmail, empdob, empSalary, empHike, empPass);
     staff.push_back(new_emp);
     save_employees_to_file(staff);
     cout << "=====================================================" << endl;
     cout << "Account created successfully with Employee ID: " << new_emp.get_emp_ID() << ", On date " << empDOH << endl;
-    
 
     cout << "Employee hired and data saved instantly." << std::endl;
     cout << "The Employee Password is sent to employee email address." << endl;
@@ -591,7 +650,7 @@ void manager::view_emp_detail(const vector<bank_emp> staff)
 {
     int emp_id;
     bool emp_found = false;
-    cout << "Enter account number to view:- " << endl;
+    cout << "Enter Employee ID to view:- " << endl;
     cin >> emp_id;
 
     for (unsigned int i = 0; i < staff.size(); i++)
@@ -645,8 +704,11 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
             {
                 string newName;
                 cout << "Enter the new name: " << endl;
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newName);
                 (*ID_to_update).set_emp_name(newName);
+                save_employees_to_file(staff);
                 cout << " Name updated successfully." << endl;
                 break;
             }
@@ -656,6 +718,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
                 cout << "Enter the new email: " << endl;
                 getline(cin, newPhone);
                 (*ID_to_update).set_emp_phone(newPhone);
+                save_employees_to_file(staff);
                 cout << " Phone Number updated successfully." << endl;
                 break;
             }
@@ -665,6 +728,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
                 cout << "Enter the new date of birth: " << endl;
                 getline(cin, newEmail);
                 (*ID_to_update).set_emp_email(newEmail);
+                save_employees_to_file(staff);
                 cout << " Email updated successfully." << endl;
                 break;
             }
@@ -674,6 +738,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
                 cout << "Enter the new salary: " << endl;
                 cin >> newSalary;
                 (*ID_to_update).set_emp_salary(newSalary);
+                save_employees_to_file(staff);
                 cout << " Salary updated successfully." << endl;
                 break;
             }
@@ -683,6 +748,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
                 cout << "Enter the new Increment percentage: " << endl;
                 cin >> new_increment;
                 (*ID_to_update).set_emp_hike(new_increment);
+                save_employees_to_file(staff);
                 cout << " Hike percentage updated successfully." << endl;
                 break;
             }
@@ -700,30 +766,63 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
     else
     {
         {
-            cout << "ERROR! Account number not found." << endl;
+            cout << "ERROR! Employee ID not found." << endl;
         }
     }
 }
 void manager::fire_emp(vector<bank_emp> &staff)
 {
     int emp_id;
-    bool emp_found = false;
-    cout << "Enter account number to view:- " << endl;
-    cin >> emp_id;
+    int index_to_fire = -1; // Use -1 to indicate no employee found
 
+    // 1. Robust Input Validation (Best Practice)
+    cout << "Enter Employee ID to fire: ";
+    if (!(cin >> emp_id))
+    {
+        cout << "Invalid input. Please enter a number." << endl;
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return;
+    }
+
+    // 2. Search Loop (Find and Confirm)
     for (unsigned int i = 0; i < staff.size(); i++)
     {
         if (staff[i].get_emp_ID() == emp_id)
         {
-            staff.erase(staff.begin() + i);
-            cout << "Employee fired successfully." << endl;
-            emp_found = true;
-            break;
+            staff[i].show_emp_detail_man(); // Show details for confirmation
+            index_to_fire = i;              // Store the correct index
+            break;                          // Stop searching immediately
         }
     }
-    if (!emp_found)
+
+    // 3. Deletion and Confirmation Flow
+    if (index_to_fire != -1)
+    { // Employee was found
+        int man_choice;
+        cout << "\nAre you sure you want to FIRE employee " << emp_id << "?" << endl;
+        cout << "Enter: \n 1. FIRE \n 2. CANCEL" << endl;
+        cin >> man_choice;
+
+        if (man_choice == 1)
+        {
+            // CRITICAL FIX: Erase using the stored, correct index
+            staff.erase(staff.begin() + index_to_fire);
+
+            // Save immediately for real-time persistence
+            save_employees_to_file(staff);
+
+            cout << "Employee " << emp_id << " fired successfully and data saved." << endl;
+        }
+        else
+        {
+            cout << "Termination cancelled. Returning to menu." << endl;
+        }
+    }
+    else
     {
-        cout << "ERROR! Employee ID not found." << endl;
+        // Employee was not found
+        cout << "ERROR! Employee ID " << emp_id << " not found." << endl;
     }
 }
 void manager::view_all_emps(const vector<bank_emp> staff)

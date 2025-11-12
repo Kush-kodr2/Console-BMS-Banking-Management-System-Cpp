@@ -7,7 +7,6 @@
 #include "data_handler.h"
 using namespace std;
 
-
 void customer_mode(vector<bank_account> &customers)
 {
     int acc_number;
@@ -121,11 +120,21 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
         cout << "Login failed! Invalid ID or password." << endl;
         return;
     }
-    // logged in, now continue
+    // logged in, now continue, check if its the first login of employee
+    if (loggedIn_emp->get_not_changed_pass())
+    {
+        cout << "\n\nWARNING: Temporary Password Detected. MANDATORY PASSWORD CHANGE Required" << endl;
+
+        // Call the public method that handles the interactive change loop
+        loggedIn_emp->initiate_pass_change();
+
+        // save the vector , after the change to update the password and the flag in the file!
+        save_employees_to_file(staff);
+    }
+
     int emp_choice;
     cout << "=====================================================" << endl;
     cout << "Welcome, staff member....." << endl;
-    cout << "Opened Accounts..." << endl;
     do
     {
         cout << "1. Open new Account" << endl; // add more ops later...
@@ -350,6 +359,7 @@ int main()
                     break;
                 default:
                     cout << "ERROR! Invalid Input." << endl;
+                    break;
                     break;
                 }
             } while (choice1 != 3);

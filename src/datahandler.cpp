@@ -47,7 +47,9 @@ void save_employees_to_file(const vector<bank_emp> &employees, const string &fil
                         << employees[i].get_sal_incre() << ","
                         << employees[i].get_emp_dob() << ","
                         << employees[i].get_emp_email() << ","
-                        << employees[i].get_emp_phone() << endl;
+                        << employees[i].get_emp_phone() << ","
+                        << employees[i].get_emp_pass() << ","
+                        << employees[i].get_not_changed_pass() << endl;
     }
 }
 
@@ -205,7 +207,7 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
 
     if (!emp_file.is_open())
     {
-        cerr << "[System] Employee data file not found. " << endl;
+        cerr << "[System] Employee data file not found. "<< filename << endl;
         return;
     }
     auto is_valid_int = [](const string &s)
@@ -274,10 +276,10 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
         int emp_id = 0;
         double emp_salary = 0;
         float emp_sal_incr = 0.0;
-
+        string emp_pass;
         int field_index = 0;
         bool skip_line = false;
-
+        bool not_changed_pass;
         while (getline(ss, segment, ','))
         {
             try
@@ -285,7 +287,7 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
                 if (field_index == 0)
                 {
                     if (!is_valid_int(segment))
-                        throw std::invalid_argument("Invalid emp_id");
+                        throw invalid_argument("Invalid emp_id");
                     emp_id = stoi(segment);
                 }
                 else if (field_index == 1)
@@ -324,6 +326,19 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
                 {
                     emp_phone = segment;
                 }
+                else if (field_index == 8)
+                {
+                    emp_pass = segment;
+                }
+                else if (field_index == 9)
+                {
+                    if (!is_valid_int)
+                    {
+                        throw invalid_argument("Invalid Flag");
+                    }
+                    not_changed_pass = stoi(segment);
+                }
+                
                 field_index++;
             }
             catch (const exception &e)
@@ -337,7 +352,8 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
         {
             continue;
         }
-        bank_emp loaded_emp(emp_name, emp_doh, emp_phone, emp_email, emp_dob, emp_salary, emp_sal_incr);
+        bool final_not_changed = (not_changed_pass == 1);
+        bank_emp loaded_emp(emp_id, emp_pass, emp_name, emp_doh, emp_phone, emp_email, emp_dob, emp_salary, emp_sal_incr, final_not_changed);
         employees.push_back(loaded_emp);
     }
     emp_file.close();
