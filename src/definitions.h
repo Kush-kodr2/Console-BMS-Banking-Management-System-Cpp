@@ -5,7 +5,7 @@
 
 using namespace std;
 template <typename T>
-T get_valid_input(const string&, T, T);
+T get_valid_input(const string &, T, T);
 class bank_account
 {
 private:
@@ -91,8 +91,8 @@ class acc_close_request
     int acc_num;
     int employee_ID;
     string employee_Name;
-    
-    public:
+
+public:
     acc_close_request(int acc, const int empID, const string &empName)
         : acc_num(acc), employee_ID(empID), employee_Name(empName) // initializer list new feature in cpp, used instead of the old constructor body assignment, as given below.
     {
@@ -115,7 +115,7 @@ class acc_close_request
 
 class bank_emp
 {
-private:
+protected:
     static int next_emp_ID;
     int emp_ID;
     string emp_pass;
@@ -202,18 +202,17 @@ public:
     }
 };
 
-class manager
+class manager : public bank_emp
 {
 private:
-    int manager_ID;
+    string manager_ID;
     string manager_pass;
-    string manager_PIN;
 
 public:
-    void open_new_acc(vector<bank_account> &customers);
-    void view_acc(const vector<bank_account> &customers);
+    manager(string, string);
+    // void open_new_acc(vector<bank_account> &customers);
+    // void view_acc(const vector<bank_account> &customers);
     void close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests);
-
     void hire_new_emp(vector<bank_emp> &staff);
     void view_emp_detail(const vector<bank_emp> staff);
     void update_emp_detail(vector<bank_emp> &staff);
@@ -222,9 +221,7 @@ public:
     void view_all_emps(const vector<bank_emp> staff);
     void view_all_customers(const vector<bank_account> customers);
     void view_balancesheet();
-    bool check_credentials(const int, const string &);
-
-    manager(int, string);
+    bool check_credentials(const string, const string &);
 };
 
 #endif

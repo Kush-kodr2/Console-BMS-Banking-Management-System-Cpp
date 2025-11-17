@@ -97,13 +97,13 @@ void bank_account::setAccType(string accType)
     acc_type = accType;
 }
 
-// Employees Method
+// Employees Methods
 int bank_emp::next_emp_ID = 1000;
 bool bank_emp::login(const int id, const string pass)
 {
     return (emp_ID == id && emp_pass == pass);
 }
-void bank_emp ::open_new_acc(vector<bank_account> &customers)
+void bank_emp::open_new_acc(vector<bank_account> &customers)
 {
     string name;
     string email_id;
@@ -114,9 +114,7 @@ void bank_emp ::open_new_acc(vector<bank_account> &customers)
     string pin;
 
     cout << ".....OPEN NEW ACCOUNT....." << endl;
-    cout << "";
     cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cout << "Enter the customer name:- " << endl;
     getline(cin, name);
     cout << "Enter " << name << "'s email ID:- " << endl;
@@ -380,80 +378,84 @@ void bank_emp::initiate_pass_change()
 }
 
 // Manager methods
-
-manager::manager(int ID, string pass)
+manager::manager(string ID, string pass) : bank_emp("Manager ", "01/01/2000", "000", "manager@bank.com", "01/01/1970", 0.0, 0.0f, pass)
 {
     manager_ID = ID;
-    manager_pass = pass;
 }
-bool manager::check_credentials(const int ID, const string &pass)
+bool manager::check_credentials(const string ID, const string &pass)
 {
-    return (manager_ID == ID && manager_pass == pass);
-}
-void manager::open_new_acc(vector<bank_account> &customers)
-{
-    string name;
-    string email_id;
-    double init_balance = 0;
-    string dob;
-    int chooser;
-    string acc_type;
-    string pin;
-    cout << ".....OPEN NEW ACCOUNT....." << endl;
-    cout << "";
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cout << "Enter the customer name:- " << flush;
-    getline(cin, name);
-    cout << "Enter " << name << "'s email ID:- " << flush;
-    getline(cin, email_id);
-    cout << "Enter " << name << "'s Date of Birth(MM/DD/YYYY):- " << flush;
-    getline(cin, dob);
-    do
-    {
-        cout << "Enter the " << name << "'s account type:- " << endl;
-        cout << "1. Savings Account(Press 1) \n2. Current Account(Press 2)" << endl;
-        cin >> chooser;
-    } while (chooser != 1 && chooser != 2);
-    if (chooser == 1)
-        acc_type = "Saving";
-    else
-        acc_type = "Current";
-    cout << "Enter the initial deposit:- " << flush;
-    cin >> init_balance;
-    cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cout << "Kindly ask the user to generate a PIN:- " << endl;
-    cout << "Hey, " << name << "! Kindly set your account password (REMEMBER IT): " << flush;
-    cin >> pin;
-    cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    bank_account new_account(name, init_balance, email_id, dob, acc_type, pin);
-    customers.push_back(new_account);
-    save_customers_to_file(customers);
-    cout << "=====================================================" << endl;
-    cout << "Account created successfully with account number " << new_account.getaccnum() << endl;
-}
-void manager::view_acc(const vector<bank_account> &customers)
-{
-    int acc_number;
-    bool acc_found = false;
-    cout << "Enter account number to view:- " << endl;
-    acc_number = get_valid_input<int>("Enter account number to view:", 10000, 103412000); 
+    string cleanIdInput = trim(ID);
+    string cleanPassInput = trim(pass);
 
-    for (unsigned int i = 0; i < customers.size(); i++)
-    {
-        if (customers[i].getaccnum() == acc_number)
-        {
-            customers[i].show_acc_details();
-            acc_found = true;
-        }
-    }
-    if (!acc_found)
-    {
-        cout << "ERROR! Account number not found." << endl;
-    }
+    bool idsMatch = (manager_ID == cleanIdInput);
+    bool passwordsMatch = (emp_pass == cleanPassInput);
+
+    return (idsMatch && passwordsMatch);
 }
+// void manager::open_new_acc(vector<bank_account> &customers)
+//  {
+//      string name;
+//      string email_id;
+//      double init_balance = 0;
+//      string dob;
+//      int chooser;
+//      string acc_type;
+//      string pin;
+//      cout << ".....OPEN NEW ACCOUNT....." << endl;
+//      cout << "";
+//      std::cin.clear();
+//      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//      cout << "Enter the customer name:- " << flush;
+//      getline(cin, name);
+//      cout << "Enter " << name << "'s email ID:- " << flush;
+//      getline(cin, email_id);
+//      cout << "Enter " << name << "'s Date of Birth(MM/DD/YYYY):- " << flush;
+//      getline(cin, dob);
+//      do
+//      {
+//          cout << "Enter the " << name << "'s account type:- " << endl;
+//          cout << "1. Savings Account(Press 1) \n2. Current Account(Press 2)" << endl;
+//          cin >> chooser;
+//      } while (chooser != 1 && chooser != 2);
+//      if (chooser == 1)
+//          acc_type = "Saving";
+//      else
+//          acc_type = "Current";
+//      cout << "Enter the initial deposit:- " << flush;
+//      cin >> init_balance;
+//      cin.clear();
+//      cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//      cout << "Kindly ask the user to generate a PIN:- " << endl;
+//      cout << "Hey, " << name << "! Kindly set your account password (REMEMBER IT): " << flush;
+//      cin >> pin;
+//      cin.clear();
+//      cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//      bank_account new_account(name, init_balance, email_id, dob, acc_type, pin);
+//      customers.push_back(new_account);
+//      save_customers_to_file(customers);
+//      cout << "=====================================================" << endl;
+//      cout << "Account created successfully with account number " << new_account.getaccnum() << endl;
+//  }
+
+// void manager::view_acc(const vector<bank_account> &customers)
+//  {
+//      int acc_number;
+//      bool acc_found = false;
+//      cout << "Enter account number to view:- " << endl;
+//      acc_number = get_valid_input<int>("Enter account number to view:", 10000, 103412000);
+//      for (unsigned int i = 0; i < customers.size(); i++)
+//      {
+//          if (customers[i].getaccnum() == acc_number)
+//          {
+//              customers[i].show_acc_details();
+//              acc_found = true;
+//          }
+//      }
+//      if (!acc_found)
+//      {
+//          cout << "ERROR! Account number not found." << endl;
+//      }
+//  }
 void manager::close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests)
 {
     int man_choice;

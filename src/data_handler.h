@@ -16,4 +16,6 @@ void load_employees(vector<bank_emp> &employees, const string &filename = "data/
 
 void save_closure_requests(const vector<acc_close_request> &requests, const string &filename = "data/closure_requests.csv");
 void load_closure_requests(vector<acc_close_request> &requests, const string &filename = "data/closure_requests.csv");
+
+void load_managers(vector<manager>& managers, const string& filename = "data/manager_config.csv");
 #endif

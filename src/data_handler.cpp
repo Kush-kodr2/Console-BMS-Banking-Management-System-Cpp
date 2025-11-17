@@ -1,4 +1,5 @@
 #include "definitions.h"
+#include "utilitiy.h"
 #include "data_handler.h"
 #include <iostream>
 #include <vector>
@@ -409,4 +410,40 @@ void load_closure_requests(vector<acc_close_request> &requests, const string &fi
             cerr << "[Error] Skipping corrupted request record." << endl;
         }
     }
+}
+
+void load_managers(vector<manager>& managers, const string& filename) {
+    
+    ifstream file(filename);
+
+    if (!file.is_open()) {
+        cerr << "[System] Manager config file not found. Starting with empty manager list." << std::endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        if (line.empty()) continue; 
+
+        stringstream ss(line);
+        string idStr, passStr;
+
+        // Read the two fields, separated by a comma (assuming saveManagerConfig wrote CSV)
+        getline(ss, idStr, ',');
+        getline(ss, passStr); 
+        
+        passStr = trim(passStr);    
+        idStr = trim(idStr);   
+        try {
+            // Create the Manager object using the data from the file
+            manager loadedManager(idStr, passStr);
+            managers.push_back(loadedManager);
+
+        } catch (const exception& e) {
+            cerr << "[Error] Skipping corrupted manager record: " << line << std::endl;
+        }
+    }
+
+    file.close();
+    cout << "[System] Manager credentials loaded successfully." << std::endl;
 }

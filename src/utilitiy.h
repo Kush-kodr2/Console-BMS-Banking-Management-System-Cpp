@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <algorithm>
 using namespace std;
 
 template <typename T>
@@ -49,4 +50,25 @@ T get_valid_input(const string &prompt, T min_val, T max_val)
     return value;
 }
 
+ 
+// trim function
+
+inline string trim(string s) {
+    // Defines all characters considered whitespace: space, tab, carriage return, newline
+    const string whitespace = " \t\r\n";
+    
+    // 1. Find the position of the first character that IS NOT whitespace
+    size_t start = s.find_first_not_of(whitespace);
+    
+    // If the entire string is whitespace (start == string::npos), return an empty string
+    if (start == std::string::npos) 
+        return std::string();
+    
+    // 2. Find the position of the last character that IS NOT whitespace
+    size_t end = s.find_last_not_of(whitespace);
+    
+    // 3. Extract the clean substring
+    // The length of the substring is calculated as (end - start + 1)
+    return s.substr(start, end - start + 1);
+};
 #endif

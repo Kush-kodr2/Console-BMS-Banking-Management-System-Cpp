@@ -168,22 +168,31 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
     } while (emp_choice != 5);
 }
 
-void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests)
+void manager_mode(vector<manager> &managers, vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests)
 {
-    int id;
+    string id;
     string pass;
     bool loggedIn = false;
+    manager *logged_man = nullptr;
     // login logic.......
     cout << "...........MANAGER MODE..........." << endl;
     cout << "=====================================================" << endl;
     cout << "...........MANAGER LOGIN..........." << endl;
     cout << "Enter Manager ID: ";
     cin >> id;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << "Enter Password: ";
     cin >> pass;
-    if (manager.check_credentials(id, pass))
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+   for (unsigned int i = 0; i < managers.size(); i++)
     {
-        loggedIn = true;
+        manager &man = managers[i];
+        if (man.check_credentials(trim(id), trim(pass)))
+        {
+            logged_man = &man;
+            loggedIn = true;
+            break;
+        }
     }
     if (!loggedIn)
     {
@@ -220,17 +229,17 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 switch (man_choice1)
                 {
                 case 1:
-                    manager.open_new_acc(customers);
+                    (*logged_man).open_new_acc(customers);
                     save_customers_to_file(customers);
                     break;
                 case 2:
-                    manager.view_acc(customers);
+                    (*logged_man).view_acc(customers);
                     break;
                 case 3:
-                    manager.close_acc(customers, requests);
+                    (*logged_man).close_acc(customers, requests);
                     break;
                 case 4:
-                    manager.view_all_customers(customers);
+                   (*logged_man).view_all_customers(customers);
                     break;
                 case 5:
                     cout << "Returning........." << endl;
@@ -259,20 +268,20 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 switch (man_choice2)
                 {
                 case 1:
-                    manager.hire_new_emp(staff);
+                    (*logged_man).hire_new_emp(staff);
                     save_employees_to_file(staff);
                     break;
                 case 2:
-                    manager.view_emp_detail(staff);
+                    (*logged_man).view_emp_detail(staff);
                     break;
                 case 3:
-                    manager.update_emp_detail(staff);
+                    (*logged_man).update_emp_detail(staff);
                     break;
                 case 4:
-                    manager.fire_emp(staff);
+                   (*logged_man).fire_emp(staff);
                     break;
                 case 5:
-                    manager.view_all_emps(staff);
+                    (*logged_man).view_all_emps(staff);
                     break;
                 case 6:
                     cout << "Returning to manager menu...." << endl;
@@ -285,7 +294,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
         }
         case 3:
             cout << "Reports................." << endl; // add options for seeing different reports...
-            manager.view_balancesheet();
+            (*logged_man).view_balancesheet();
             break;
         case 4:
             cout << "Returning to Main Menu..." << endl;
@@ -301,13 +310,14 @@ int main()
     vector<bank_account> customers;
     vector<bank_emp> staff;
     vector<acc_close_request> requests;
-
-    manager m1(0000, "securepass");
-    manager m2(0100, "kushalpass");
+    vector<manager> managers;
+    // manager m1(0000, "securepass");
+    // manager m2(0100, "kushalpass");
     system("cls");
     load_customers(customers);
     load_employees(staff);
     load_closure_requests(requests);
+    load_managers(managers);
     cout << "\n\n";
     cout << "+-----------------------------------------------------+" << endl;
     cout << "|                                                     |" << endl;
@@ -353,7 +363,7 @@ int main()
                     staff_mode(customers, staff, requests);
                     break;
                 case 2:
-                    manager_mode(m1, customers, staff, requests);
+                    manager_mode(managers, customers, staff, requests);
                     break;
                 case 3:
                     cout << "Exiting Menu......" << endl;
