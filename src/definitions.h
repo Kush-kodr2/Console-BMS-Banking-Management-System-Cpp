@@ -4,8 +4,8 @@
 #include <string>
 
 using namespace std;
-
-string get_date();
+template <typename T>
+T get_valid_input(const string&, T, T);
 class bank_account
 {
 private:

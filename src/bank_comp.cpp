@@ -1,5 +1,6 @@
 #include "definitions.h"
 #include "data_handler.h"
+#include "utilitiy.h"
 #include <vector>
 #include <iostream>
 #include <limits>
@@ -23,7 +24,6 @@ string get_date()
     return ss.str();
 }
 // User Methods
-
 int bank_account::nextAccountNumber = 103410000;
 
 bool bank_account::cst_login(const int accnum, const string pin)
@@ -34,14 +34,14 @@ bool bank_account::cst_login(const int accnum, const string pin)
 void bank_account::deposit_money(double amt)
 {
     balance = balance + amt;
-    cout << "₹" << amt << " deposited successfully in you bank account." << endl; // ending with ...096
+    cout << "Rs." << amt << " deposited successfully in you bank account." << endl; // ending with ...096
 }
 void bank_account::withdraw_money(double amt)
 {
     if (balance > amt && balance - amt > 500)
     {
         balance = balance - amt;
-        cout << "₹" << amt << " withdrawn successfully from your bank account." << endl;
+        cout << "Rs." << amt << " withdrawn successfully from your bank account." << endl;
     }
     else if (balance > amt && balance - amt <= 500)
     {
@@ -57,13 +57,13 @@ void bank_account::withdraw_money(double amt)
 void bank_account::display_balance() const
 {
 
-    cout << "BALANCE: ₹" << balance << endl;
+    cout << "BALANCE: Rs." << balance << endl; // \u20B9 for rupee sign
 }
 void bank_account::show_acc_details() const
 {
     cout << "Name: " << holder_name << endl;
     cout << "Account Number: " << acc_num << endl;
-    cout << "Balance: ₹" << balance << endl;
+    cout << "Balance: Rs." << balance << endl;
     cout << "Account type: " << acc_type;
     cout << endl;
     cout << "Email Address: " << email_add << endl;
@@ -121,7 +121,7 @@ void bank_emp ::open_new_acc(vector<bank_account> &customers)
     getline(cin, name);
     cout << "Enter " << name << "'s email ID:- " << endl;
     getline(cin, email_id);
-    cout << "Enter " << name << "'s Date of Birth(MM/DD/YYYY):- " << endl;
+    cout << "Enter " << name << "'s Date of Birth(DD/MM/YYYY):- " << endl;
     getline(cin, dob);
     do
     {
@@ -155,8 +155,7 @@ void bank_emp::view_acc(const vector<bank_account> &customers)
 {
     int acc_number;
     bool acc_found = false;
-    cout << "Enter account number to view:- " << endl;
-    cin >> acc_number;
+    acc_number = get_valid_input<int>("Enter account number to view: ", 10000, 103412000); // 1000 customers (for now?)
 
     for (unsigned int i = 0; i < customers.size(); i++)
     {
@@ -177,8 +176,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
     int acc_number;
     // bool acc_found = false;
     bank_account *acc_to_update = nullptr;
-    cout << "Enter account number to update:- " << endl;
-    cin >> acc_number;
+    acc_number = get_valid_input<int>("Enter account number to update: ", 10000, 103412000); // 1000 customers (for now?)
 
     for (unsigned int i = 0; i < customers.size(); i++)
     {
@@ -200,8 +198,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
             cout << "3. Date of Birth" << endl;
             cout << "4. Account Type" << endl;
             cout << "5. Exit Update Menu" << endl;
-            cout << "Enter your choice: ";
-            cin >> choice;
+            choice = get_valid_input<int>("Enter your choice: ", 1, 5);
 
             switch (choice)
             {
@@ -209,7 +206,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
             {
                 string newName;
                 cin.clear();
-                cout << "Enter the new name" << endl;
+                cout << "Enter the new name:-" << endl;
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newName);
                 (*acc_to_update).setName(newName);
@@ -220,7 +217,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
             case 2:
             {
                 string newEmail;
-                cout << "Enter the new email" << endl;
+                cout << "Enter the new email:- " << endl;
                 cin.clear();
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newEmail);
@@ -232,7 +229,7 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
             case 3:
             {
                 string newDob;
-                cout << "Enter the new date of birth" << endl;
+                cout << "Enter the new date of birth:- " << endl;
                 cin.clear();
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newDob);
@@ -286,8 +283,7 @@ void bank_emp::close_acc(vector<bank_account> &customers, vector<acc_close_reque
     int acc_number = 0;
     bool acc_found = false;
     // bank_account *acc_to_remove = nullptr;
-    cout << "Enter the account number to be closed:- " << endl;
-    cin >> acc_number;
+    acc_number = get_valid_input<int>("Enter account number to be closed: ", 10000, 103412000); // 1000 customers (for now?)
 
     for (unsigned int i = 0; i < customers.size(); i++)
     {
@@ -360,7 +356,7 @@ void bank_emp::initiate_pass_change()
 {
     string newPass1, newPass2;
 
-    cout << "\n[SECURITY] Initiating mandatory password change." << std::endl;
+    cout << "\nInitiating mandatory password change." << std::endl;
     do
     {
         cout << "Enter NEW Password (min 6 chars): ";
@@ -443,7 +439,7 @@ void manager::view_acc(const vector<bank_account> &customers)
     int acc_number;
     bool acc_found = false;
     cout << "Enter account number to view:- " << endl;
-    cin >> acc_number;
+    acc_number = get_valid_input<int>("Enter account number to view:", 10000, 103412000); 
 
     for (unsigned int i = 0; i < customers.size(); i++)
     {
@@ -467,7 +463,7 @@ void manager::close_acc(vector<bank_account> &customers, vector<acc_close_reques
         cout << "1. Review Pending Account Closure Requests" << endl;
         cout << "2. Close an account" << endl;
         cout << "3. Back to Manager Menu" << endl;
-        cin >> man_choice;
+        man_choice = get_valid_input<int>("Enter choice: ", 1, 3);
         if (cin.fail())
         {
             cout << "Error: Invalid input. Please enter a number." << endl;
@@ -488,11 +484,11 @@ void manager::close_acc(vector<bank_account> &customers, vector<acc_close_reques
 
                 for (unsigned int i = 0; i < requests.size(); i++)
                 {
-                    cout << i + 1 << ". Account: " << requests[i].get_acc_num()<< endl;
+                    cout << i + 1 << ". Account: " << requests[i].get_acc_num() << endl;
                     cout << " Requested by: " << requests[i].get_emp_ID() << " -- " << requests[i].get_emp_name() << endl;
                 }
                 unsigned int choice;
-                cout << "Enter the number of the request to approve (or 0 to cancel): ";
+                cout << "Enter the index of the request to approve (or 0 to cancel): ";
                 cin >> choice;
 
                 if (choice > 0 && choice <= requests.size())
@@ -524,8 +520,8 @@ void manager::close_acc(vector<bank_account> &customers, vector<acc_close_reques
 
                 do
                 {
-                    std::cout << "Enter the account number to close: ";
-                    std::cin >> acc_num;
+                    cout << "Enter the account number to close: ";
+                    acc_num = get_valid_input<int>("Enter account number to view:", 10000, 103412000);
 
                     if (cin.fail())
                     {
@@ -651,8 +647,7 @@ void manager::view_emp_detail(const vector<bank_emp> staff)
 {
     int emp_id;
     bool emp_found = false;
-    cout << "Enter Employee ID to view:- " << endl;
-    cin >> emp_id;
+    emp_id = get_valid_input<int>("Enter Employee ID to view:- ", 1, 9999);
 
     for (unsigned int i = 0; i < staff.size(); i++)
     {
@@ -672,8 +667,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
     int empID;
     // bool acc_found = false;
     bank_emp *ID_to_update = nullptr;
-    cout << "Enter Employee ID to view:- " << endl;
-    cin >> empID;
+    empID = get_valid_input<int>("Enter Employee ID to view:- ", 1, 9999);
 
     for (unsigned int i = 0; i < staff.size(); i++)
     {
@@ -696,8 +690,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
             cout << "4. Employee Salary" << endl;
             cout << "5. Employee Salary Increment per annum(%)" << endl;
             cout << "6. Exit Update Menu" << endl;
-            cout << "Enter your choice: ";
-            cin >> choice;
+            choice = get_valid_input<int>("Enter your choice: ", 1, 6);
 
             switch (choice)
             {
@@ -705,8 +698,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
             {
                 string newName;
                 cout << "Enter the new name: " << endl;
-                cin.clear();
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                // cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, newName);
                 (*ID_to_update).set_emp_name(newName);
                 save_employees_to_file(staff);
@@ -716,7 +708,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
             case 2:
             {
                 string newPhone;
-                cout << "Enter the new email: " << endl;
+                cout << "Enter the new phone: " << endl;
                 getline(cin, newPhone);
                 (*ID_to_update).set_emp_phone(newPhone);
                 save_employees_to_file(staff);
@@ -726,7 +718,7 @@ void manager::update_emp_detail(vector<bank_emp> &staff)
             case 3:
             {
                 string newEmail;
-                cout << "Enter the new date of birth: " << endl;
+                cout << "Enter the new email: " << endl;
                 getline(cin, newEmail);
                 (*ID_to_update).set_emp_email(newEmail);
                 save_employees_to_file(staff);
@@ -776,15 +768,7 @@ void manager::fire_emp(vector<bank_emp> &staff)
     int emp_id;
     int index_to_fire = -1; // Use -1 to indicate no employee found
 
-    // 1. Robust Input Validation (Best Practice)
-    cout << "Enter Employee ID to fire: ";
-    if (!(cin >> emp_id))
-    {
-        cout << "Invalid input. Please enter a number." << endl;
-        cin.clear();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return;
-    }
+    emp_id = get_valid_input<int>("Enter Employee ID to view:- ", 1, 9999);
 
     // 2. Search Loop (Find and Confirm)
     for (unsigned int i = 0; i < staff.size(); i++)

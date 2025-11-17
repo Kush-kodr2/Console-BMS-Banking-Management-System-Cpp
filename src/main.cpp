@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "definitions.h"
 #include "data_handler.h"
+#include "utilitiy.h"
 using namespace std;
 
 void customer_mode(vector<bank_account> &customers)
@@ -43,29 +44,28 @@ void customer_mode(vector<bank_account> &customers)
 
     do
     {
-        cout << "\n=====================================================";
+        cout << "\n=====================================================\n";
         cout << "1. Deposit Money" << endl; // add more ops later...
         cout << "2. Withdraw Money" << endl;
         cout << "3. View Balance" << endl;
         cout << "4. View Account Details" << endl;
-        cout << "5. Read Terems and Conditions" << endl;
+        cout << "5. Read Terms and Conditions" << endl;
         cout << "6. Back to Main Menu(Press 6)" << endl;
         cout << "=====================================================" << endl;
-        cin >> cst_choice;
+        cst_choice = get_valid_input<int>("Enter choice: ", 1, 6);
         double amt;
         switch (cst_choice)
         {
         case 1:
         {
-            cout << "Enter the amount to deposit" << endl;
-            cin >> amt;
+            
+            amt = get_valid_input<double>("Enter the amount to deposit: ", 1 , 500000);
             (*loggedIn_cst).deposit_money(amt);
             break;
         }
         case 2:
         {
-            cout << "Enter the amount to withdraw" << endl;
-            cin >> amt;
+            amt = get_valid_input<double>("Enter the amount to withdraw: ", 1, 500000);
             (*loggedIn_cst).withdraw_money(amt);
             break;
         }
@@ -142,7 +142,7 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
         cout << "3. Update Account Details" << endl;
         cout << "4. Add request to close existing account" << endl;
         cout << "5. Back to Main Menu(Press 5)" << endl;
-        cin >> emp_choice;
+        emp_choice = get_valid_input<int>("Enter choice: ", 1, 5);
 
         switch (emp_choice)
         {
@@ -200,7 +200,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
         cout << "2. Employee Management" << endl;
         cout << "3. View Balance Sheet/Report" << endl;
         cout << "4. Back to Main Menu(Press 4)" << endl;
-        cin >> man_choice;
+        man_choice = get_valid_input<int>("Enter choice: ", 1, 4);
 
         switch (man_choice)
         {
@@ -216,7 +216,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 cout << "4. View all Customer Accounts" << endl;
                 cout << "5. Back to Manager Home Menu(Press 5)" << endl;
                 cout << "\n=====================================================" << endl;
-                cin >> man_choice1;
+                man_choice1 = get_valid_input<int>("Enter choice: ", 1, 5);
                 switch (man_choice1)
                 {
                 case 1:
@@ -255,7 +255,7 @@ void manager_mode(manager &manager, vector<bank_account> &customers, vector<bank
                 cout << "5. View all Employees" << endl;
                 cout << "6. Back to Manager Home Menu(Press 6)" << endl;
                 cout << "=====================================================" << endl;
-                cin >> man_choice2;
+                man_choice2 = get_valid_input<int>("Enter choice: ", 1, 6);
                 switch (man_choice2)
                 {
                 case 1:
@@ -327,9 +327,8 @@ int main()
         cout << "    3. --- Exit Program ---" << endl;
         cout << "\n";
         cout << "=====================================================" << endl;
-        cout << "Enter your choice: ";
-
-        std::cin >> choice;
+    
+        choice = get_valid_input<int>("Enter your choice: ", 1, 3);
 
         switch (choice)
         {
@@ -346,7 +345,8 @@ int main()
                 cout << "2. Manager Login" << endl;
                 cout << "3. Exit this menu" << endl;
                 cout << "=====================================================" << endl;
-                cin >> choice1;
+                
+                choice1 = get_valid_input<int>("Enter choice: ", 1, 3);
                 switch (choice1)
                 {
                 case 1:

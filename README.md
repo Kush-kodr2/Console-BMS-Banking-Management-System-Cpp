@@ -18,7 +18,7 @@ This project demonstrates fundamental banking operations with secure multi-tiere
 2. Navigate to the project directory.
 3. Compile the C++ files using a compiler (e.g. g++):-
    Use this command in terminal/cmd:
-   g++ src/*.cpp -o output\bank_app
+   g++ src/*.cpp -o output/bank_app
 4. Run the compiled executable (bank_app.exe) to start the banking management system.
 
 ## Issues and Future Roadmap for V2.0:-
