@@ -25,22 +25,19 @@ This project demonstrates fundamental banking operations with secure multi-tiere
 
 This project is fully functional (V1.0) but has planned architectural improvements. Contributors are welcome!
 
-* Input Validation: Implement do-while loops with robust type-checking (cin.fail()) for all user input (amounts, numbers, IDs) to prevent crashes from non-numeric input.[WORKING]
-
-* Full CRUD: Implement the ability for Managers/Staff to permanently delete and modify existing customer and employee records from the main data vectors. [DONE]
+* String Input Validation: add input specific parsing functions, for fields like date, email.[WORKING]
 
 * Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable data handling. [PLANNED]
 
-* GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface. [IN_PROGRESS]
+* GUI Interface: Develop a graphical user interface (GUI) for improved user experience over the command-line interface, using Qt or Iamgui. [IN_PROGRESS]
 
-## Features
+## Functionality Overview
 
 * Create and manage bank accounts.
-
 * Deposit and withdraw funds.
-
 * View account details and transaction history.
-
+* Employee management (add, view, remove employees).
+* Managerial oversight (view all accounts, employees, and balancesheet).
 * Simple and user-friendly command-line interface.
 
 ## License
