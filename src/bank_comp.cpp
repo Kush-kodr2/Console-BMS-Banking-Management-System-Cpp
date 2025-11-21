@@ -7,6 +7,7 @@
 #include <ctime>
 #include <sstream>
 using namespace std;
+//Main functions
 string get_date()
 {
     time_t now = time(0);

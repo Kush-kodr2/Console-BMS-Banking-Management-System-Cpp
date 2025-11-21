@@ -7,7 +7,96 @@
 #include "data_handler.h"
 #include "utilitiy.h"
 using namespace std;
+//declarations
+void customer_mode(vector<bank_account> &customers);
+void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests);
+void manager_mode(vector<manager> &managers, vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests);
+//main
+int main()
+{
+    vector<bank_account> customers;
+    vector<bank_emp> staff;
+    vector<acc_close_request> requests;
+    vector<manager> managers;
+    // demo/trial manager id:101  pass: "mypass123" 
+    // demo/trial emp id:1001 pass: "mypasss"
+    // demo/trial customer acc:103410001 pass: "demopass"
+    system("cls");
+    load_customers(customers);
+    load_employees(staff);
+    load_closure_requests(requests);
+    load_managers(managers);
 
+    //main home
+    cout << "\n\n";
+    cout << "+-----------------------------------------------------+" << endl;
+    cout << "|                                                     |" << endl;
+    cout << "|         WELCOME TO THE APEX BANKING SYSTEM          |" << endl;
+    cout << "|                                                     |" << endl;
+    cout << "+-----------------------------------------------------+" << endl;
+    cout << "\n";
+    int choice;
+    do
+    {
+        cout << "=====================================================" << endl;
+        cout << "             ** Select User Action **           " << std::endl;
+        cout << "=====================================================" << endl;
+        cout << "\n";
+        cout << "    1. >>> Customer Login <<<" << endl;
+        cout << "    2. >>> Staff/Manager Login   <<<" << endl;
+        cout << "    3. --- Exit Program ---" << endl;
+        cout << "\n";
+        cout << "=====================================================" << endl;
+        
+        choice = get_valid_input<int>("Enter your choice: ", 1, 3);
+        
+        switch (choice)
+        {
+        case 1:
+            customer_mode(customers);
+            break;
+            case 2:
+            {
+            int choice1;
+            do
+            {
+                cout << "\n=====================================================" << endl;
+                cout << "1. Staff Login" << endl;
+                cout << "2. Manager Login" << endl;
+                cout << "3. Exit this menu" << endl;
+                cout << "=====================================================" << endl;
+                
+                choice1 = get_valid_input<int>("Enter choice: ", 1, 3);
+                switch (choice1)
+                {
+                case 1:
+                    staff_mode(customers, staff, requests);
+                    break;
+                case 2:
+                manager_mode(managers, customers, staff, requests);
+                    break;
+                case 3:
+                cout << "Exiting Menu......" << endl;
+                break;
+                default:
+                cout << "ERROR! Invalid Input." << endl;
+                break;
+                break;
+            }
+            } while (choice1 != 3);
+            break;
+        }
+        case 3:
+            cout << "Exiting Program........" << endl;
+            break;
+        default:
+        cout << "ERROR! Invalid Input" << endl;
+        break;
+    }
+    } while (choice != 3);
+    return 0;
+}
+//definitions, do implement them seperately, in like modes.cpp 
 void customer_mode(vector<bank_account> &customers)
 {
     int acc_number;
@@ -368,84 +457,3 @@ void manager_mode(vector<manager> &managers, vector<bank_account> &customers, ve
     }
 }
 
-int main()
-{
-    vector<bank_account> customers;
-    vector<bank_emp> staff;
-    vector<acc_close_request> requests;
-    vector<manager> managers;
-    // manager m1(0000, "securepass");
-    // manager m2(0100, "kushalpass");
-    system("cls");
-    load_customers(customers);
-    load_employees(staff);
-    load_closure_requests(requests);
-    load_managers(managers);
-    cout << "\n\n";
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "|                                                     |" << endl;
-    cout << "|         WELCOME TO THE APEX BANKING SYSTEM          |" << endl;
-    cout << "|                                                     |" << endl;
-    cout << "+-----------------------------------------------------+" << endl;
-    cout << "\n";
-    int choice;
-    do
-    {
-        cout << "=====================================================" << endl;
-        cout << "             ** Select User Action **           " << std::endl;
-        cout << "=====================================================" << endl;
-        cout << "\n";
-        cout << "    1. >>> Customer Login <<<" << endl;
-        cout << "    2. >>> Staff/Manager Login   <<<" << endl;
-        cout << "    3. --- Exit Program ---" << endl;
-        cout << "\n";
-        cout << "=====================================================" << endl;
-
-        choice = get_valid_input<int>("Enter your choice: ", 1, 3);
-
-        switch (choice)
-        {
-        case 1:
-            customer_mode(customers);
-            break;
-        case 2:
-        {
-            int choice1;
-            do
-            {
-                cout << "\n=====================================================" << endl;
-                cout << "1. Staff Login" << endl;
-                cout << "2. Manager Login" << endl;
-                cout << "3. Exit this menu" << endl;
-                cout << "=====================================================" << endl;
-
-                choice1 = get_valid_input<int>("Enter choice: ", 1, 3);
-                switch (choice1)
-                {
-                case 1:
-                    staff_mode(customers, staff, requests);
-                    break;
-                case 2:
-                    manager_mode(managers, customers, staff, requests);
-                    break;
-                case 3:
-                    cout << "Exiting Menu......" << endl;
-                    break;
-                default:
-                    cout << "ERROR! Invalid Input." << endl;
-                    break;
-                    break;
-                }
-            } while (choice1 != 3);
-            break;
-        }
-        case 3:
-            cout << "Exiting Program........" << endl;
-            break;
-        default:
-            cout << "ERROR! Invalid Input" << endl;
-            break;
-        }
-    } while (choice != 3);
-    return 0;
-}

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <stdexcept> // For exception
+#include <stdexcept> // For exception in catch, in ifstream
 using namespace std;
 
 void save_customers_to_file(const vector<bank_account> &customers, const string &filename)
@@ -176,9 +176,9 @@ void load_customers(vector<bank_account> &customers, const string &filename)
                 fieldIndex++;
             }
 
-            catch (const std::exception &e)
+            catch (const exception &e)
             {
-                std::cerr << "\n[ERROR] Skipping corrupted customer record: " << line << " Reason: " << e.what() << endl;
+                cerr << "\n[ERROR] Skipping corrupted customer record: " << line << " Reason: " << e.what() << endl;
                 skip_line = true;
                 break;
             }
