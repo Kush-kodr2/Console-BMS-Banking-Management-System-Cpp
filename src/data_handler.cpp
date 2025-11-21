@@ -35,7 +35,7 @@ void save_employees_to_file(const vector<bank_emp> &employees, const string &fil
 
     if (!employees_write.is_open())
     {
-        cerr << "ERROR: Could not open " << filename << "for saving employee data! " << endl;
+        cerr << "ERROR: Could not open " << filename << " for saving employee data! " << endl;
         return;
     }
 
@@ -252,15 +252,15 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
         }
         return true;
     };
-    // auto trim = [](string s) -> string
-    // {
-    //     const string whites = " \t\r\n";
-    //     size_t start = s.find_first_not_of(whites);
-    //     if (start == string::npos)
-    //         return string();
-    //     size_t end = s.find_last_not_of(whites);
-    //     return s.substr(start, end - start + 1);
-    // };
+    auto trim = [](string s) -> string
+    {
+        const string whites = " \t\r\n";
+        size_t start = s.find_first_not_of(whites);
+        if (start == string::npos)
+            return string();
+        size_t end = s.find_last_not_of(whites);
+        return s.substr(start, end - start + 1);
+    };
     string line;
 
     while (getline(emp_file, line))
@@ -333,7 +333,8 @@ void load_employees(vector<bank_emp> &employees, const string &filename)
                 }
                 else if (field_index == 9)
                 {
-                    if (!is_valid_int)
+                    segment = trim(segment);
+                    if (!is_valid_int(segment))
                     {
                         throw invalid_argument("Invalid Flag");
                     }
@@ -412,34 +413,78 @@ void load_closure_requests(vector<acc_close_request> &requests, const string &fi
     }
 }
 
-void load_managers(vector<manager>& managers, const string& filename) {
-    
+void save_managers(const vector<manager> &managers, const string &filename)
+{
+    ofstream write_pass(filename);
+    if (!write_pass.is_open())
+    {
+        cerr << "Could not open " << filename << " for saving manager data!" << endl;
+        return;
+    }
+    for (unsigned int i = 0; i < managers.size(); i++)
+    {
+        write_pass << managers[i].get_man_id() << ","
+                   << managers[i].get_man_pass() << ","
+                   << (managers[i].get_not_changed_pass() ? 1 : 0) << endl;
+    }
+}
+void load_managers(vector<manager> &managers, const string &filename)
+{
+
     ifstream file(filename);
 
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         cerr << "[System] Manager config file not found. Starting with empty manager list." << std::endl;
         return;
     }
 
     string line;
-    while (getline(file, line)) {
-        if (line.empty()) continue; 
+    auto trim_local = [](string s) -> string
+    {
+        const string whites = " \t\r\n";
+        size_t start = s.find_first_not_of(whites);
+        if (start == string::npos)
+            return string();
+        size_t end = s.find_last_not_of(whites);
+        return s.substr(start, end - start + 1);
+    };
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
 
         stringstream ss(line);
-        string idStr, passStr;
+        string idStr, passStr, flagStr;
+        bool not_changed_pass = false;
 
-        // Read the two fields, separated by a comma (assuming saveManagerConfig wrote CSV)
-        getline(ss, idStr, ',');
-        getline(ss, passStr); 
-        
-        passStr = trim(passStr);    
-        idStr = trim(idStr);   
-        try {
+        if (!getline(ss, idStr, ','))
+            continue;
+        if (!getline(ss, passStr, ','))
+        {
+            // if only one field present, skip
+            continue;
+        }
+        // optional flag: if present read remaining token
+        if (!getline(ss, flagStr))
+        {
+            flagStr = "0"; // default: not changed = false
+        }
+
+        passStr = trim_local(passStr);
+        idStr = trim_local(idStr);
+        flagStr = trim_local(flagStr);
+
+        try
+        {
+            not_changed_pass = (stoi(flagStr) == 1);
             // Create the Manager object using the data from the file
-            manager loadedManager(idStr, passStr);
+            manager loadedManager(idStr, passStr, not_changed_pass);
             managers.push_back(loadedManager);
-
-        } catch (const exception& e) {
+        }
+        catch (const exception &e)
+        {
             cerr << "[Error] Skipping corrupted manager record: " << line << std::endl;
         }
     }

@@ -58,8 +58,8 @@ void customer_mode(vector<bank_account> &customers)
         {
         case 1:
         {
-            
-            amt = get_valid_input<double>("Enter the amount to deposit: ", 1 , 500000);
+
+            amt = get_valid_input<double>("Enter the amount to deposit: ", 1, 500000);
             (*loggedIn_cst).deposit_money(amt);
             break;
         }
@@ -105,67 +105,92 @@ void staff_mode(vector<bank_account> &customers, vector<bank_emp> &staff, vector
     for (unsigned int i = 0; i < staff.size(); i++)
     {
         bank_emp &emp = staff[i];
-
-        if (emp.login(id, pass))
+        if (staff[i].get_emp_ID() == id)
         {
             loggedIn_emp = &emp;
-            loggedIn = true;
             break;
         }
     }
+    if (loggedIn_emp == nullptr)
+    {
+        cout << "=====================================================" << endl;
+        cout << "Login failed! Invalid ID or password." << endl;
+        return;
+    }
+    // check if its the first login of employee
+    if (loggedIn_emp->get_not_changed_pass())
+    {
+        // first login of emp
+        if (!loggedIn_emp->login(id, pass))
+        {
+            cout << "=====================================================" << endl;
+            cout << "Login failed! Invalid ID or password." << endl;
+            return;
+        }
+        cout << "\n\nWARNING: Temporary Password Detected. MANDATORY PASSWORD CHANGE Required" << endl;
 
+        // calling the public method that handles the pass change loop
+        loggedIn_emp->initiate_pass_change();
+
+        // save the vector, after  the change to update the password and the flag in the file!
+        save_employees_to_file(staff);
+        loggedIn = true;
+    }
+    else
+    { // for subsequent logins...
+
+        string sec_pass = hash_string(pass);
+        if (!loggedIn_emp->login(id, sec_pass))
+        {
+            cout << "=====================================================" << endl;
+            cout << "Login failed! Invalid ID or password." << endl;
+            return;
+        }
+        loggedIn = true;
+    }
+    if (loggedIn)
+    {
+        int emp_choice;
+        cout << "=====================================================" << endl;
+        cout << "Welcome, staff member....." << endl;
+        do
+        {
+            cout << "1. Open new Account" << endl; // add more ops later...
+            cout << "2. View Account" << endl;
+            cout << "3. Update Account Details" << endl;
+            cout << "4. Add request to close existing account" << endl;
+            cout << "5. Back to Main Menu(Press 5)" << endl;
+            emp_choice = get_valid_input<int>("Enter choice: ", 1, 5);
+
+            switch (emp_choice)
+            {
+            case 1:
+                (*loggedIn_emp).open_new_acc(customers);
+                break;
+            case 2:
+                (*loggedIn_emp).view_acc(customers);
+                break;
+            case 3:
+                (*loggedIn_emp).update_acc_info(customers);
+                break;
+            case 4:
+                (*loggedIn_emp).close_acc(customers, requests);
+                break;
+            case 5:
+                cout << "Returning to Main Menu." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+            }
+        } while (emp_choice != 5);
+    }
     if (!loggedIn)
     {
         cout << "=====================================================" << endl;
         cout << "Login failed! Invalid ID or password." << endl;
         return;
     }
-    // logged in, now continue, check if its the first login of employee
-    if (loggedIn_emp->get_not_changed_pass())
-    {
-        cout << "\n\nWARNING: Temporary Password Detected. MANDATORY PASSWORD CHANGE Required" << endl;
-
-        // calling the public method that handles the pass change loop
-        loggedIn_emp->initiate_pass_change();
-
-        // save the vector , after the change to update the password and the flag in the file!
-        save_employees_to_file(staff);
-    }
-
-    int emp_choice;
-    cout << "=====================================================" << endl;
-    cout << "Welcome, staff member....." << endl;
-    do
-    {
-        cout << "1. Open new Account" << endl; // add more ops later...
-        cout << "2. View Account" << endl;
-        cout << "3. Update Account Details" << endl;
-        cout << "4. Add request to close existing account" << endl;
-        cout << "5. Back to Main Menu(Press 5)" << endl;
-        emp_choice = get_valid_input<int>("Enter choice: ", 1, 5);
-
-        switch (emp_choice)
-        {
-        case 1:
-            (*loggedIn_emp).open_new_acc(customers);
-            break;
-        case 2:
-            (*loggedIn_emp).view_acc(customers);
-            break;
-        case 3:
-            (*loggedIn_emp).update_acc_info(customers);
-            break;
-        case 4:
-            (*loggedIn_emp).close_acc(customers, requests);
-            break;
-        case 5:
-            cout << "Returning to Main Menu." << endl;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
-        }
-    } while (emp_choice != 5);
 }
 
 void manager_mode(vector<manager> &managers, vector<bank_account> &customers, vector<bank_emp> &staff, vector<acc_close_request> &requests)
@@ -184,127 +209,165 @@ void manager_mode(vector<manager> &managers, vector<bank_account> &customers, ve
     cout << "Enter Password: ";
     cin >> pass;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-   for (unsigned int i = 0; i < managers.size(); i++)
+    for (unsigned int i = 0; i < managers.size(); i++)
     {
         manager &man = managers[i];
-        if (man.check_credentials(trim(id), trim(pass)))
+        if (man.get_man_id() == trim(id))
         {
             logged_man = &man;
-            loggedIn = true;
             break;
         }
     }
-    if (!loggedIn)
+    if (logged_man == nullptr)
     {
         cout << "=====================================================" << endl;
-        cout << "Login failed! Invalid Manager ID or password." << endl;
+        cout << "Login failed! Invalid ID or password." << endl;
         return;
     }
-    // logged in, now continue
-    int man_choice;
-    cout << "\n\nWelcome, Manager....." << endl;
-    do
+    if (logged_man->get_not_changed_pass())
     {
-        cout << "1. Customer Management" << endl;
-        cout << "2. Employee Management" << endl;
-        cout << "3. View Balance Sheet/Report" << endl;
-        cout << "4. Back to Main Menu(Press 4)" << endl;
-        man_choice = get_valid_input<int>("Enter choice: ", 1, 4);
 
-        switch (man_choice)
+        if (logged_man->get_man_pass() != trim(pass))
         {
-        case 1:
+            cout << "=====================================================" << endl;
+            cout << "Login failed! Invalid ID or password." << endl;
+            return;
+        }
+        cout << "\n\nWARNING: Temporary Password Detected. MANDATORY PASSWORD CHANGE Required" << endl;
+
+        // calling the public method that handles the pass change loop
+        logged_man->initiate_pass_change();
+        logged_man->set_man_pass(logged_man->get_emp_pass());
+        // save the vector , after the change to update the password and the flag in the file!
+        save_managers(managers);
+        loggedIn = true;
+    }
+    else
+    {
+        // Subsequent login: check_credentials handles hashing detection internally
+        if (!logged_man->check_credentials(id, pass))
         {
-            int man_choice1;
-            do
+            cout << "=====================================================" << endl;
+            cout << "Login failed! Invalid ID or password." << endl;
+            return;
+        }
+        loggedIn = true; // FIX: was false, now correctly set to true
+    }
+    // logged in, now continue
+
+    if (loggedIn)
+    {
+        int man_choice;
+        cout << "\n\nWelcome, Manager....." << endl;
+        do
+        {
+            cout << "1. Customer Management" << endl;
+            cout << "2. Employee Management" << endl;
+            cout << "3. View Balance Sheet/Report" << endl;
+            cout << "4. Load New Data" << endl;
+            cout << "5. Back to Main Menu(Press 4)" << endl;
+            man_choice = get_valid_input<int>("Enter choice: ", 1, 5);
+
+            switch (man_choice)
             {
-                cout << "\n=====================================================" << endl;
-                cout << "\n1. Open new Account" << endl;
-                cout << "2. View Account" << endl;
-                cout << "3. Close Customer Account" << endl;
-                cout << "4. View all Customer Accounts" << endl;
-                cout << "5. Back to Manager Home Menu(Press 5)" << endl;
-                cout << "\n=====================================================" << endl;
-                man_choice1 = get_valid_input<int>("Enter choice: ", 1, 5);
-                switch (man_choice1)
-                {
-                case 1:
-                    (*logged_man).open_new_acc(customers);
-                    save_customers_to_file(customers);
-                    break;
-                case 2:
-                    (*logged_man).view_acc(customers);
-                    break;
-                case 3:
-                    (*logged_man).close_acc(customers, requests);
-                    break;
-                case 4:
-                   (*logged_man).view_all_customers(customers);
-                    break;
-                case 5:
-                    cout << "Returning........." << endl;
-                    break;
-                default:
-                    cout << "Invalid Input." << endl;
-                    break;
-                }
-            } while (man_choice1 != 5);
-            break;
-        }
-        case 2:
-        {
-            int man_choice2;
-            do
+            case 1:
             {
-                cout << "\n=====================================================" << endl;
-                cout << "\n1. Add new Employee" << endl;
-                cout << "2. View Employee Details" << endl;
-                cout << "3. Update Employee Details" << endl;
-                cout << "4. Fire an Employee" << endl;
-                cout << "5. View all Employees" << endl;
-                cout << "6. Back to Manager Home Menu(Press 6)" << endl;
-                cout << "=====================================================" << endl;
-                man_choice2 = get_valid_input<int>("Enter choice: ", 1, 6);
-                switch (man_choice2)
+                int man_choice1;
+                do
                 {
-                case 1:
-                    (*logged_man).hire_new_emp(staff);
-                    save_employees_to_file(staff);
-                    break;
-                case 2:
-                    (*logged_man).view_emp_detail(staff);
-                    break;
-                case 3:
-                    (*logged_man).update_emp_detail(staff);
-                    break;
-                case 4:
-                   (*logged_man).fire_emp(staff);
-                    break;
-                case 5:
-                    (*logged_man).view_all_emps(staff);
-                    break;
-                case 6:
-                    cout << "Returning to manager menu...." << endl;
-                    break;
-                default:
-                    break;
-                }
-            } while (man_choice2 != 6);
-            break;
-        }
-        case 3:
-            cout << "Reports................." << endl; // add options for seeing different reports...
-            (*logged_man).view_balancesheet();
-            break;
-        case 4:
-            cout << "Returning to Main Menu..." << endl;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
-        }
-    } while (man_choice != 4);
+                    cout << "\n=====================================================" << endl;
+                    cout << "\n1. Open new Account" << endl;
+                    cout << "2. View Account" << endl;
+                    cout << "3. Close Customer Account" << endl;
+                    cout << "4. View all Customer Accounts" << endl;
+                    cout << "5. Back to Manager Home Menu(Press 5)" << endl;
+                    cout << "\n=====================================================" << endl;
+                    man_choice1 = get_valid_input<int>("Enter choice: ", 1, 5);
+                    switch (man_choice1)
+                    {
+                    case 1:
+                        (*logged_man).open_new_acc(customers);
+                        save_customers_to_file(customers);
+                        break;
+                    case 2:
+                        (*logged_man).view_acc(customers);
+                        break;
+                    case 3:
+                        (*logged_man).close_acc(customers, requests);
+                        break;
+                    case 4:
+                        (*logged_man).view_all_customers(customers);
+                        break;
+                    case 5:
+                        cout << "Returning........." << endl;
+                        break;
+                    default:
+                        cout << "Invalid Input." << endl;
+                        break;
+                    }
+                } while (man_choice1 != 5);
+                break;
+            }
+            case 2:
+            {
+                int man_choice2;
+                do
+                {
+                    cout << "\n=====================================================" << endl;
+                    cout << "\n1. Add new Employee" << endl;
+                    cout << "2. View Employee Details" << endl;
+                    cout << "3. Update Employee Details" << endl;
+                    cout << "4. Fire an Employee" << endl;
+                    cout << "5. View all Employees" << endl;
+                    cout << "6. Back to Manager Home Menu(Press 6)" << endl;
+                    cout << "=====================================================" << endl;
+                    man_choice2 = get_valid_input<int>("Enter choice: ", 1, 6);
+                    switch (man_choice2)
+                    {
+                    case 1:
+                        (*logged_man).hire_new_emp(staff);
+                        save_employees_to_file(staff);
+                        break;
+                    case 2:
+                        (*logged_man).view_emp_detail(staff);
+                        break;
+                    case 3:
+                        (*logged_man).update_emp_detail(staff);
+                        break;
+                    case 4:
+                        (*logged_man).fire_emp(staff);
+                        break;
+                    case 5:
+                        (*logged_man).view_all_emps(staff);
+                        break;
+                    case 6:
+                        cout << "Returning to manager menu...." << endl;
+                        break;
+                    default:
+                        break;
+                    }
+                } while (man_choice2 != 6);
+                break;
+            }
+            case 3:
+                cout << "Reports................." << endl; // add options for seeing different reports...
+                (*logged_man).view_balancesheet();
+                break;
+            case 4:
+                cout << "Loading data Updates..." << endl;
+                (*logged_man).load_data(staff, customers, requests);
+                break;
+            case 5:
+                cout << "Returning to Main Menu..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+            }
+        } while (man_choice != 5);
+    }
 }
+
 int main()
 {
     vector<bank_account> customers;
@@ -337,7 +400,7 @@ int main()
         cout << "    3. --- Exit Program ---" << endl;
         cout << "\n";
         cout << "=====================================================" << endl;
-    
+
         choice = get_valid_input<int>("Enter your choice: ", 1, 3);
 
         switch (choice)
@@ -355,7 +418,7 @@ int main()
                 cout << "2. Manager Login" << endl;
                 cout << "3. Exit this menu" << endl;
                 cout << "=====================================================" << endl;
-                
+
                 choice1 = get_valid_input<int>("Enter choice: ", 1, 3);
                 switch (choice1)
                 {

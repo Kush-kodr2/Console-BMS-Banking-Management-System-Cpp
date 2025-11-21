@@ -30,15 +30,8 @@ public:
         user_pass = pin;
     }
     // Construct a bank account using an existing account number (used when loading from storage)
-    bank_account(string holderName, double initBalance, string email_id, string dob, string acc_typ, string pin, int accountNumber)
+    bank_account(string holderName, double initBalance, string email_id, string dob, string acc_typ, string pin, int accountNumber): holder_name(holderName), balance(initBalance), email_add(email_id), date_of_birth(dob), acc_type(acc_typ), acc_num(accountNumber), user_pass(pin)
     {
-        holder_name = holderName;
-        balance = initBalance;
-        email_add = email_id;
-        date_of_birth = dob;
-        acc_type = acc_typ;
-        acc_num = accountNumber;
-        user_pass = pin;
         // Ensure nextAccountNumber stays ahead of any loaded account numbers to avoid duplicates
         if (accountNumber >= nextAccountNumber)
         {
@@ -209,7 +202,14 @@ private:
     string manager_pass;
 
 public:
-    manager(string, string);
+    manager(string, string, bool);
+    string get_man_id() const{
+        return manager_ID;
+    };
+    string get_man_pass() const{
+        return manager_pass;
+    }
+     void set_man_pass(const string &p);// <-- new setter
     // void open_new_acc(vector<bank_account> &customers);
     // void view_acc(const vector<bank_account> &customers);
     void close_acc(vector<bank_account> &customers, vector<acc_close_request> &requests);
@@ -222,6 +222,7 @@ public:
     void view_all_customers(const vector<bank_account> customers);
     void view_balancesheet();
     bool check_credentials(const string, const string &);
+    void load_data(const vector<bank_emp> staff, const vector<bank_account> customers, vector<acc_close_request> &requests);
 };
 
 #endif

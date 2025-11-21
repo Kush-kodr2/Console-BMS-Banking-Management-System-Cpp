@@ -28,8 +28,8 @@ int bank_account::nextAccountNumber = 103410000;
 
 bool bank_account::cst_login(const int accnum, const string pin)
 {
-
-    return ((user_pass == pin) && (acc_num == accnum));
+    string pass_hash = hash_string(pin);
+    return ((user_pass == pass_hash) && (acc_num == accnum));
 }
 void bank_account::deposit_money(double amt)
 {
@@ -112,7 +112,7 @@ void bank_emp::open_new_acc(vector<bank_account> &customers)
     string acc_type;
     int chooser = 1;
     string pin;
-
+    string secure_pass;
     cout << ".....OPEN NEW ACCOUNT....." << endl;
     cin.clear();
     cout << "Enter the customer name:- " << endl;
@@ -142,7 +142,8 @@ void bank_emp::open_new_acc(vector<bank_account> &customers)
     cin >> pin;
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    bank_account new_account(name, init_balance, email_id, dob, acc_type, pin);
+    secure_pass = hash_string(pin);
+    bank_account new_account(name, init_balance, email_id, dob, acc_type, secure_pass);
     customers.push_back(new_account);
     save_customers_to_file(customers);
     cout << "=====================================================" << endl;
@@ -205,7 +206,6 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
                 string newName;
                 cin.clear();
                 cout << "Enter the new name:-" << endl;
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newName);
                 (*acc_to_update).setName(newName);
                 save_customers_to_file(customers);
@@ -217,7 +217,6 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
                 string newEmail;
                 cout << "Enter the new email:- " << endl;
                 cin.clear();
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newEmail);
                 (*acc_to_update).setEmail(newEmail);
                 save_customers_to_file(customers);
@@ -229,7 +228,6 @@ void bank_emp::update_acc_info(vector<bank_account> &customers)
                 string newDob;
                 cout << "Enter the new date of birth:- " << endl;
                 cin.clear();
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 getline(cin, newDob);
                 cin.clear();
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -353,7 +351,7 @@ void bank_emp::set_emp_hike(float percent)
 void bank_emp::initiate_pass_change()
 {
     string newPass1, newPass2;
-
+    string store_pass;
     cout << "\nInitiating mandatory password change." << std::endl;
     do
     {
@@ -364,7 +362,16 @@ void bank_emp::initiate_pass_change()
 
         if (newPass1 == newPass2 && newPass1.length() >= 6)
         {
-            set_pass(newPass1); // Calling the private mf,
+            store_pass = hash_string(newPass1);
+            if (typeid(*this) == typeid(bank_emp))
+            {
+                set_pass(store_pass); // Calling the private mf,
+            }
+            else if (typeid(*this) == typeid(manager))
+            {
+                 
+            }
+
             cout << "Password updated successfully. Access granted." << std::endl;
             break;
         }
@@ -378,19 +385,30 @@ void bank_emp::initiate_pass_change()
 }
 
 // Manager methods
-manager::manager(string ID, string pass) : bank_emp("Manager ", "01/01/2000", "000", "manager@bank.com", "01/01/1970", 0.0, 0.0f, pass)
+manager::manager(string ID, string pass, bool changed) : bank_emp("Manager ", "01/01/2000", "000", "manager@bank.com", "01/01/1970", 0.0, 0.0f, pass)
 {
     manager_ID = ID;
+    // Store pass AS-IS (may be plain text on first load, or hashed after password change)
+    manager_pass = pass;
+    // set the base-class flag according to 'changed'
+    not_changed_pass = changed;
 }
+
 bool manager::check_credentials(const string ID, const string &pass)
 {
-    string cleanIdInput = trim(ID);
-    string cleanPassInput = trim(pass);
+    string cleanId = trim(ID);
+    string cleanPass = trim(pass);
 
-    bool idsMatch = (manager_ID == cleanIdInput);
-    bool passwordsMatch = (emp_pass == cleanPassInput);
+    if (cleanId != manager_ID) return false;
 
-    return (idsMatch && passwordsMatch);
+    // Always hash input and compare to stored (always-hashed) password
+    return hash_string(cleanPass) == manager_pass;
+}
+void manager::set_man_pass(const string &p)
+{
+    // update base-class stored password and flag
+    set_pass(p);            // sets emp_pass and not_changed_pass=false
+    manager_pass = p;       // keep manager_pass in sync
 }
 // void manager::open_new_acc(vector<bank_account> &customers)
 //  {
@@ -850,4 +868,9 @@ void manager::view_all_emps(const vector<bank_emp> staff)
 void manager::view_balancesheet()
 {
     cout << "Balance Sheet" << endl;
+}
+void manager::load_data( vector<bank_emp> staff, vector<bank_account> customers, vector<acc_close_request> &requests){
+    load_closure_requests(requests);
+    load_customers(customers);
+    load_employees(staff);
 }

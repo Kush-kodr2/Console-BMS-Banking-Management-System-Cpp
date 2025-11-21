@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <iomanip>
+#include <functional>
+#include <sstream>
 #include <algorithm>
 using namespace std;
 
@@ -71,4 +74,20 @@ inline string trim(string s) {
     // The length of the substring is calculated as (end - start + 1)
     return s.substr(start, end - start + 1);
 };
+//basic hashing function, will be using openSSL SHA 256 encryption later
+inline string hash_string(const string &input)
+{
+    if (input.empty())
+        return "";
+
+    // Using a simple algorithm (std::hash) combined with string representation
+    // to simulate an irreversible hash value.
+    size_t hash_val = hash<string>{}(input);
+
+    std::stringstream ss;
+    // Format the hash value into a hexadecimal string
+    ss << hex << setw(16) << setfill('0') << hash_val;
+
+    return ss.str();
+}
 #endif
