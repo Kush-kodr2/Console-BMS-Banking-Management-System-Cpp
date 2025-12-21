@@ -1,9 +1,16 @@
-# Console-BMS-Banking-Management-System-Cpp
+# Apex Ledger - Banking Management System
 
+Console based BMS (Banking-Management-System) using C++
 A CLI banking management system using C++, OOP principles, and file I/O for data persistence.
 This project demonstrates fundamental banking operations with secure multi-tiered access control.
 
-## Key Features & Technical Highlights
+## Technologies Used
+
+* C++ (Standard Library)
+* File I/O for data persistence (.csv files)
+* Object-Oriented Programming (OOP) principles
+
+## Key Features
 
 * **Tiered Access Control**: Implements secure separation of duties for Customer, Staff, and Manager modes, each with distinct permissions.
 * **Data Persistence (File I/O):** All customer and employee data is dynamically loaded from and saved to dedicated `.csv` files upon program launch and exit.
@@ -26,6 +33,10 @@ This project demonstrates fundamental banking operations with secure multi-tiere
 This project is fully functional (V1.0) but has planned architectural improvements. Contributors are welcome!
 
 * String Input Validation: add input specific parsing functions, for fields like date, email.[WORKING]
+
+* Enable Wrong Password Count: if limit reached, account lockout after n failed attempts. [PLANNED]
+
+* Concurrency Handling: Implement file locks or database transactions to manage simultaneous access in multi-user environments. [PLANNED]
 
 * Database Integration: Replace File I/O (.csv files) with a proper database connection for scalable data handling. [PLANNED]
 

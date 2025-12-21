@@ -150,12 +150,23 @@ void customer_mode(vector<bank_account> &customers)
 
             amt = get_valid_input<double>("Enter the amount to deposit: ", 1, 500000);
             (*loggedIn_cst).deposit_money(amt);
+            save_customers_to_file(customers);
             break;
         }
         case 2:
         {
             amt = get_valid_input<double>("Enter the amount to withdraw: ", 1, 500000);
+            cout<< "\n Enter you PASSWORD again for verification: ";    // extra security for withdrawals
+            string verify_pass;
+            cin >> verify_pass;
+            if (loggedIn_cst->cst_login(acc_number, verify_pass) == false)
+            {
+                cout << "Password incorrect! Transaction cancelled. Retry with correct password." << endl;
+                break;
+            }
+            cout << "\nProcessing withdrawal of amount: " << amt << endl;
             (*loggedIn_cst).withdraw_money(amt);
+            save_customers_to_file(customers);
             break;
         }
         case 3:
@@ -354,7 +365,7 @@ void manager_mode(vector<manager> &managers, vector<bank_account> &customers, ve
             cout << "2. Employee Management" << endl;
             cout << "3. View Balance Sheet/Report" << endl;
             cout << "4. Load New Data" << endl;
-            cout << "5. Back to Main Menu(Press 4)" << endl;
+            cout << "5. Back to Main Menu(Press 5)" << endl;
             man_choice = get_valid_input<int>("Enter choice: ", 1, 5);
 
             switch (man_choice)
